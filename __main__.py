@@ -1,5 +1,12 @@
 from flask import Flask, request, jsonify
 from platforms.twitter import get_media_url as get_twitter_media_url
+from platforms.instagram import get_media_url as get_instagram_media_url
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+INSTAGRAM_EMAIL = os.getenv('INSTAGRAM_EMAIL')
+INSTAGRAM_PASSWORD = os.getenv('INSTAGRAM_PASSWORD')
 
 app = Flask(__name__)
 
@@ -25,14 +32,16 @@ def api_get_media_url():
 def get_platform(url):
     if 'twitter.com' in url:
         return 'twitter'
-    # Add more platforms here as they are implemented
+    elif 'instagram.com' in url:
+        return 'instagram'
     else:
         return None
 
 def extract_media_url(url, platform):
     if platform == 'twitter':
         return get_twitter_media_url(url)
-    # Add more platforms here as they are implemented
+    elif platform == 'instagram':
+        return get_instagram_media_url(url, INSTAGRAM_EMAIL, INSTAGRAM_PASSWORD)
     else:
         raise Exception('Unsupported platform')
 
