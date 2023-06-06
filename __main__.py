@@ -2,17 +2,27 @@
 Flask API to extract media URLs from various platforms, such as Twitter and Instagram.
 """
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, stream_with_context
 from platforms.twitter import get_media_url as get_twitter_media_url
-from platforms.instagram import instagram_client
+from platforms.reddit import get_media_url as get_reddit_media_url
+from platforms.redgifs import RedGifs as RedGifs
+# from platforms.instagram import instagram_client
+import requests
+import os
+import logging
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_caching import Cache
 
 app = Flask(__name__)
+limiter = Limiter(key_func=get_remote_address)
+limiter.init_app(app)
+
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})  # This line initializes the cache object
 
 @app.route('/api/get_media_url', methods=['POST'])
+@limiter.limit("1000/day;100/hour;50/minute")
 def api_get_media_url():
-    """
-    Extract media URLs from a given URL.
-    """
     data = request.json
     url = data.get('url')
 
@@ -25,10 +35,15 @@ def api_get_media_url():
 
     try:
         media_urls = extract_media_url(url, platform)
-    except ValueError as exc:
+    except Exception as exc:
+        app.logger.error(f'Failed to extract media URLs for {url} due to {exc}')
         return jsonify({'error': str(exc)}), 500
 
     return jsonify({'media_urls': media_urls})
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({'status': 'healthy'}), 200
 
 def get_platform(url):
     """
@@ -38,10 +53,12 @@ def get_platform(url):
         return 'twitter'
     elif 'instagram.com' in url:
         return 'instagram'
-    # Add more platforms here as they are implemented
+    elif 'reddit.com' in url:
+        return 'reddit'
     else:
         return None
 
+@cache.cached(timeout=50)
 def extract_media_url(url, platform):
     """
     Extract media URLs from a given URL.
@@ -49,10 +66,30 @@ def extract_media_url(url, platform):
     if platform == 'twitter':
         return get_twitter_media_url(url)
     elif platform == 'instagram':
-        return instagram_client.get_media_url(url)
+        # return instagram_client.get_media_url(url)
         return []
+    elif platform == 'reddit':
+        return get_reddit_media_url(url)
     else:
         raise ValueError('Unsupported platform')
 
+# Redgifs streaming
+@app.route('/api/redgifs/<video_id>', methods=['GET'])
+def api_redgifs(video_id):
+    rg = RedGifs()
+    high_quality_url = rg.get_high_quality_url(video_id)
+
+    if not high_quality_url:
+        return jsonify({'error': 'Failed to fetch high quality URL'}), 400
+
+    req = requests.get(high_quality_url, stream=True)
+
+    def generate():
+        for chunk in req.iter_content(chunk_size=1024):
+            yield chunk
+
+    return Response(stream_with_context(generate()), content_type=req.headers['content-type'])
+
 if __name__ == '__main__':
+    # debug_mode = bool(os.getenv("DEBUG_MODE", False))
     app.run(debug=True)
