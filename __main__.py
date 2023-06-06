@@ -5,6 +5,7 @@ Flask API to extract media URLs from various platforms, such as Twitter and Inst
 from flask import Flask, request, jsonify
 from platforms.twitter import get_media_url as get_twitter_media_url
 from platforms.instagram import instagram_client
+import requests
 
 app = Flask(__name__)
 
@@ -53,6 +54,18 @@ def extract_media_url(url, platform):
     # Add more platforms here as they are implemented
     else:
         raise ValueError('Unsupported platform')
+
+@app.route('/cors_proxy')
+def cors_proxy():
+    """
+    CORS proxy that enables CORS for external media URLs.
+    """
+    url = request.args.get('url')
+    if not url:
+        return jsonify({'error': 'No URL provided'}), 400
+
+    response = requests.get(url)
+    return Response(response.content, mimetype=response.headers.get('content-type'))
 
 if __name__ == '__main__':
     app.run(debug=True)
