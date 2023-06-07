@@ -1,5 +1,6 @@
 import requests
 import logging
+import html
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +13,7 @@ def get_media_url(url):
     try:
         response = _fetch_reddit_data(url)
         data = response.json()
+        print(data) # print the API response to console
     except Exception as e:
         logger.error("Failed to fetch reddit data: %s", e)
         return []
@@ -62,11 +64,12 @@ def _get_post_media_urls(post_data):
                 media_urls.append(image['source']['url'])
         elif 'thumbnail' in post_data:
             media_urls.append(post_data['thumbnail'])
-    elif post_hint == 'gallery':
-        if 'gallery_data' in post_data:
-            for item in post_data['gallery_data']['items']:
-                media_id = item['media_id']
-                if media_id in post_data['media_metadata']:
-                    media_urls.append(post_data['media_metadata'][media_id]['p'])
+    
+    # check if media_metadata exists, which usually indicates a gallery post
+    if 'media_metadata' in post_data:
+        for media_id, media_info in post_data['media_metadata'].items():
+            if 's' in media_info:
+                # Unescape the URL before appending
+                media_urls.append(html.unescape(media_info['s']['u']))
 
     return media_urls
