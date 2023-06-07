@@ -38,6 +38,18 @@ class InstagramClient:
             urls.append(media.video_url)
 
         return urls
+  
+    def get_media_url_by_id(self, media_id):
+      """
+      Return the video URL from a given Instagram media ID.
+      """
+      media = self.client.media_info(media_id)
+
+      if media.media_type == 2:
+          print("Detected video")  
+          return media.video_url
+      else:
+          return None
 
 INSTAGRAM_EMAIL = os.environ.get("INSTAGRAM_EMAIL")
 INSTAGRAM_PASSWORD = os.environ.get("INSTAGRAM_PASSWORD")

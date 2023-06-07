@@ -11,7 +11,7 @@ from platforms.reddit import get_media_url as get_reddit_media_url
 from platforms.imgur import get_mp4_url as get_imgur_mp4_url
 from platforms.gfycat import get_best_quality_url as get_gfycat_best_quality_url
 from platforms.redgifs import RedGifs as RedGifs
-# from platforms.instagram import instagram_client
+from platforms.instagram import instagram_client
 
 # Tools
 import requests
@@ -21,13 +21,10 @@ import logging
 # Logging and caching
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_caching import Cache
 
 app = Flask(__name__)
 limiter = Limiter(key_func=get_remote_address)
 limiter.init_app(app)
-
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})  # This line initializes the cache object
 
 @app.route('/api/get_media_url', methods=['POST'])
 @limiter.limit("1000/day;100/hour;50/minute")
@@ -78,8 +75,7 @@ def extract_media_url(url, platform):
     if platform == 'twitter':
         return get_twitter_media_url(url)
     elif platform == 'instagram':
-        # return instagram_client.get_media_url(url)
-        return []
+        return instagram_client.get_media_url(url)
     elif platform == 'reddit':
         return get_reddit_media_url(url)
     elif platform == 'imgur':
@@ -88,6 +84,22 @@ def extract_media_url(url, platform):
         return [get_gfycat_best_quality_url(url)]
     else:
         raise ValueError('Unsupported platform')
+
+# Instagram streaming
+@app.route('/api/instagram/<video_id>', methods=['GET'])
+def api_instagram(video_id):
+    video_url = instagram_client.get_media_url_by_id(video_id)
+
+    if not video_url:
+        return jsonify({'error': 'Failed to fetch video URL'}), 400
+
+    req = requests.get(video_url, stream=True)
+
+    def generate():
+        for chunk in req.iter_content(chunk_size=1024):
+            yield chunk
+
+    return Response(stream_with_context(generate()), content_type=req.headers['content-type'])
 
 # Redgifs streaming
 @app.route('/api/redgifs/<video_id>', methods=['GET'])
@@ -107,5 +119,5 @@ def api_redgifs(video_id):
     return Response(stream_with_context(generate()), content_type=req.headers['content-type'])
 
 if __name__ == '__main__':
-    # debug_mode = bool(os.getenv("DEBUG_MODE", False))
+    debug_mode = bool(os.getenv("DEBUG_MODE", False))
     app.run(debug=True)
