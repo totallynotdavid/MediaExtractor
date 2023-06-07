@@ -2,14 +2,23 @@
 Flask API to extract media URLs from various platforms, such as Twitter and Instagram.
 """
 
+# API
 from flask import Flask, request, jsonify, Response, stream_with_context
+
+# Platforms
 from platforms.twitter import get_media_url as get_twitter_media_url
 from platforms.reddit import get_media_url as get_reddit_media_url
+from platforms.imgur import get_mp4_url as get_imgur_mp4_url
+from platforms.gfycat import get_best_quality_url as get_gfycat_best_quality_url
 from platforms.redgifs import RedGifs as RedGifs
 # from platforms.instagram import instagram_client
+
+# Tools
 import requests
 import os
 import logging
+
+# Logging and caching
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_caching import Cache
@@ -55,10 +64,13 @@ def get_platform(url):
         return 'instagram'
     elif 'reddit.com' in url:
         return 'reddit'
+    elif 'imgur.com' in url:
+        return 'imgur'
+    elif 'gfycat.com' in url:
+        return 'gfycat'
     else:
         return None
 
-@cache.cached(timeout=50)
 def extract_media_url(url, platform):
     """
     Extract media URLs from a given URL.
@@ -70,6 +82,10 @@ def extract_media_url(url, platform):
         return []
     elif platform == 'reddit':
         return get_reddit_media_url(url)
+    elif platform == 'imgur':
+        return get_imgur_mp4_url(url)
+    elif platform == 'gfycat':
+        return [get_gfycat_best_quality_url(url)]
     else:
         raise ValueError('Unsupported platform')
 

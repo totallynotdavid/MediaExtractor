@@ -15,10 +15,10 @@ Install the requirements: `pip install -r requirements.txt`
 
     | Type               | URL                                                   | Works |
     | ------------------ | ----------------------------------------------------- | ----- |
-    | Imágenes (1 a más) | https://twitter.com/trbrtc/status/1646592080293122067 | ✅    |
-    | Imágenes (1)       | https://twitter.com/berthofmanecon/status/1643051849682157569 | ✅    |
-    | Video (1)          | https://twitter.com/vocodehq/status/1642935433276555265 | ✅    |
-    | URL (thumbnail)    | https://twitter.com/ATabarrok/status/1665737367880187906 | ✅    |
+    | Imágenes (1 a más) | https://twitter.com/trbrtc/status/1646592080293122067 | ✅ |
+    | Imágenes (1)       | https://twitter.com/berthofmanecon/status/1643051849682157569 | ✅ |
+    | Video (1)          | https://twitter.com/vocodehq/status/1642935433276555265 | ✅  |
+    | URL (thumbnail)    | https://twitter.com/ATabarrok/status/1665737367880187906 | ✅ |
 
 3. Reddit
 
@@ -28,3 +28,9 @@ Install the requirements: `pip install -r requirements.txt`
     | Image - (1 a más - redd.it) | https://www.reddit.com/r/neverchangejapan/comments/141oqma/osaka_restaurant_created_glasses_that_require_you/ | ✅ |
     | Video - 1 (redd.it) | https://www.reddit.com/r/AfterEffects/comments/142ggsy/whats_the_best_way_to_animate_the_switch_between/ | ✅ |
     | URLs | https://www.reddit.com/r/neverchangejapan/comments/142jh1s/1995_japanese_commercials/ | ✅ |
+
+4. Gfycat
+
+    | Type               | URL                                          | Works |
+    | ------------------ | -------------------------------------------- | ----- |
+    | Gif | https://gfycat.com/bewitchedunawarefreshwatereel-incheon-airport-park-soo-young-girl-group | ✅ |
