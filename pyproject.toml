@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "media-url-extractor"
+version = "0.5.0"
+description = "API that returns URLs from social media"
+authors = ["David Duran <dadch1404@gmail.com>"]
+readme = "README.md"
+packages = [{include = "media_url_extractor"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^2.3.2"
+requests = "^2.31.0"
+logging = "^0.4.9.6"
+flask-limiter = "^3.3.1"
+instagrapi = "^1.17.10"
+python-dotenv = "^1.0.0"
+pillow = "^9.5.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

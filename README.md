@@ -1,6 +1,7 @@
 # Media URL API
 
 Install the requirements: `pip install -r requirements.txt`
+Or you can also use Poetry: `poetry run python .\__main__.py`
 
 1. Instagram
 
