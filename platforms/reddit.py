@@ -13,7 +13,6 @@ def get_media_url(url):
     try:
         response = _fetch_reddit_data(url)
         data = response.json()
-        print(data) # print the API response to console
     except Exception as e:
         logger.error("Failed to fetch reddit data: %s", e)
         return []
@@ -55,15 +54,15 @@ def _get_post_media_urls(post_data):
     post_hint = post_data.get('post_hint')
 
     if post_hint == 'image':
-        media_urls.append(post_data['url'])
+        media_urls.append(html.unescape(post_data['url']))
     elif post_hint == 'hosted:video':
-        media_urls.append(post_data['media']['reddit_video']['fallback_url'])
+        media_urls.append(html.unescape(post_data['media']['reddit_video']['fallback_url']))
     elif post_hint in ['rich:video', 'link']:
         if 'preview' in post_data and 'images' in post_data['preview']:
             for image in post_data['preview']['images']:
-                media_urls.append(image['source']['url'])
+                media_urls.append(html.unescape(image['source']['url']))
         elif 'thumbnail' in post_data:
-            media_urls.append(post_data['thumbnail'])
+            media_urls.append(html.unescape(post_data['thumbnail']))
     
     # check if media_metadata exists, which usually indicates a gallery post
     if 'media_metadata' in post_data:

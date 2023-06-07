@@ -27,4 +27,4 @@ Install the requirements: `pip install -r requirements.txt`
     | Image - 1 (redd.it) | https://www.reddit.com/r/greentext/comments/142ia5j/anon_gets_dating_advice/ | ✅ |
     | Image - (1 a más - redd.it) | https://www.reddit.com/r/neverchangejapan/comments/141oqma/osaka_restaurant_created_glasses_that_require_you/ | ✅ |
     | Video - 1 (redd.it) | https://www.reddit.com/r/AfterEffects/comments/142ggsy/whats_the_best_way_to_animate_the_switch_between/ | ✅ |
-    | URLs | https://www.reddit.com/r/neverchangejapan/comments/142jh1s/1995_japanese_commercials/ | ❌ |
+    | URLs | https://www.reddit.com/r/neverchangejapan/comments/142jh1s/1995_japanese_commercials/ | ✅ |
